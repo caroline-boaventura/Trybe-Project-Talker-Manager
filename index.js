@@ -186,6 +186,16 @@ const validateWatchedAtMiddleware = (req, res, next) => {
   next();
 };
 
+const validateRateZeroMiddleware = (req, res, next) => {
+  const { rate } = req.body.talk;
+
+  if (rate <= 0) {
+    return res.status(400).json({ message: 'O campo "rate" deve ser um inteiro de 1 à 5' });
+  }
+
+  next();
+};
+
 const validateRateMiddleware = (req, res, next) => {
   const { rate } = req.body.talk;
 
@@ -208,6 +218,7 @@ app.post(
   validateAgeMiddleware,
   validateTalkMiddleware,
   validateWatchedAtMiddleware,
+  validateRateZeroMiddleware,
   validateRateMiddleware,
   async (req, res) => {
     const { name, age, talk: { watchedAt, rate } } = req.body;
@@ -219,6 +230,37 @@ app.post(
     await fs.writeFileSync('./talker.json', JSON.stringify(talkers));
     
     res.status(201).json(objNewTalker);
+},
+);
+
+// Requisito 5 ======
+app.put(
+  '/talker/:id',
+  validateTokenMiddleware,
+  validateNameMiddleware,
+  validateAgeMiddleware,
+  validateTalkMiddleware,
+  validateWatchedAtMiddleware,
+  validateRateZeroMiddleware,
+  validateRateMiddleware,
+  async (req, res) => {
+    const { name, age, talk: { watchedAt, rate } } = req.body;
+    const { id } = req.params;
+    const data = await readFile();
+    const talkers = JSON.parse(data);
+    const newTalker = { id: parseInt(id, 10), name, age, talk: { watchedAt, rate } };
+
+    const editTalkers = talkers.map((talker) => {
+      if (talker.id === newTalker.id) {
+        return newTalker;
+      }
+
+      return talker;
+    });
+
+    await fs.writeFileSync('./talker.json', JSON.stringify(editTalkers));
+
+    res.status(200).json(newTalker);
 },
 );
 
