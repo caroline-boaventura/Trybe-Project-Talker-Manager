@@ -264,6 +264,24 @@ app.put(
 },
 );
 
+// Requisito 6 ======
+app.delete(
+  '/talker/:id',
+  validateTokenMiddleware,
+  async (req, res) => {
+    const { id } = req.params;
+    const data = await readFile();
+    const talkers = JSON.parse(data);
+    const talkerIndex = talkers.findIndex((t) => t.id === Number(id));
+
+    talkers.splice(talkerIndex, 1);
+
+    await fs.writeFileSync('./talker.json', JSON.stringify(talkers));
+
+    res.status(200).json({ message: 'Pessoa palestrante deletada com sucesso' });
+  },
+);
+
 app.listen(PORT, () => {
   console.log('Online');
 });
