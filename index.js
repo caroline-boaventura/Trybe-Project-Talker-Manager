@@ -40,6 +40,40 @@ app.get('/talker', (req, res) => {
   res.status(200).json(talkers);
 });
 
+// Requisito 7 ====== 
+// rotas search devem ficar antes de rotas :id, para não haver conflitos (o Express entende a palavra "search" como um id, caso seja colocado depois)
+
+const validateQueryMiddleware = (req, res, next) => {
+  const { q } = req.query;
+  const data = readFile();
+  const talkers = JSON.parse(data);
+
+  if (!q || q === '') {
+    return res.status(200).json(talkers);
+  }
+
+  next();
+};
+
+app.get(
+  '/talker/search',
+  validateTokenMiddleware,
+  validateQueryMiddleware,
+  async (req, res) => {
+  const { q } = req.query;
+  const data = await readFile();
+  const talkers = JSON.parse(data);
+
+  const filteredTalkers = talkers.filter((talker) => talker.name.includes(q));
+
+  if (!filteredTalkers) {
+    return res.status(200).json([]);
+  }
+
+  res.status(200).json(filteredTalkers);
+},
+);
+
 // Requisito 2 =====
 app.get('/talker/:id', (req, res) => {
   const data = readFile();
