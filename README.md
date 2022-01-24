@@ -1,6 +1,6 @@
 # Project Talker Manager
 
-Projeto realizado no Bloco de Introdução ao desenvolvimento Web com Node.js. 
+Projeto realizado no Bloco de Desenvolvimento Back-end com Node.js. 
 
 Desenvolvimento de uma API de um CRUD de palestrantes. Utilização do módulo `fs`.
 
